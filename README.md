@@ -47,7 +47,6 @@ The Matrix Calculator Application is an advanced matrix computation tool designe
 ### Prerequisites
 - Qt Framework (e.g., Qt Creator or Qt Installer)
 - C++ Compiler (e.g., GCC, MSVC)
-- Eigen Library
 
 ### Steps
 1. Clone the repository.
