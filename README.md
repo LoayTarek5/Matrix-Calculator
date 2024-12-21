@@ -1,12 +1,4 @@
 # Matrix Calculator
-## Developed by:
-### Loay Tarek Mostafa
-### Abdelrahman Nabil Hassan
-### Ahmed Ehab Sayed
-Tool made for **Math-3 course MA214**
-Supervised by:
-## Dr. Eng. Moustafa Reda A. Eltantawi
-# Matrix Calculator Application
 
 ## Overview
 
