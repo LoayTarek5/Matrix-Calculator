@@ -1,12 +1,4 @@
 # Matrix Calculator
-## Developed by:
-### Loay Tarek Mostafa
-### Abdelrahman Nabil Hassan
-### Ahmed Ehab Sayed
-Tool made for **Math-3 course MA214**
-Supervised by:
-## Dr. Eng. Moustafa Reda A. Eltantawi
-# Matrix Calculator Application
 
 ## Overview
 
@@ -47,7 +39,6 @@ The Matrix Calculator Application is an advanced matrix computation tool designe
 ### Prerequisites
 - Qt Framework (e.g., Qt Creator or Qt Installer)
 - C++ Compiler (e.g., GCC, MSVC)
-- Eigen Library
 
 ### Steps
 1. Clone the repository.

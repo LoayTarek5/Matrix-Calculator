@@ -3,6 +3,10 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QWidget>
+#include <QHeaderView>
+#include <QDialog>
+#include <QString>
+#include <QFont>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -876,7 +880,23 @@ public:
 
         // Apply styles to components
         setStyleSheet(inputStyle + buttonStyle + labelStyle);
+        QString tableStyle = R"(
+    QTableWidget {
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        border: 1px solid #404040;
+        gridline-color: #094771;  /* Slate Blue */
+    }
+    QHeaderView::section {
+        background-color: #252526;
+        color: #d4d4d4;
+        border: 1px solid #404040;
+    }
+)";
 
+        matrix1Table->setStyleSheet(tableStyle);
+        matrix2Table->setStyleSheet(tableStyle);
+        resultTable->setStyleSheet(tableStyle);
         // Create icons for tabs
         QIcon basicIcon = style()->standardIcon(QStyle::SP_ComputerIcon);
         QIcon advancedIcon = style()->standardIcon(QStyle::SP_FileDialogDetailedView);
@@ -1171,7 +1191,7 @@ public:
             "QMessageBox QLabel {"
             "    color: #d4d4d4;"
             "    min-width: 300px;"
-             "    font-size: 25px;"
+            "    font-size: 25px;"
             "}"
             "QMessageBox QPushButton {"
             "    background-color: #0e639c;"
@@ -1684,25 +1704,32 @@ private slots:
             return;
         }
 
-        // Create detailed popup
+        // Create detailed popup with increased size
         QDialog *detailDialog = new QDialog(this);
         detailDialog->setWindowTitle("System of Equations Solution");
-        detailDialog->setMinimumSize(500, 400);
+        detailDialog->setMinimumSize(800, 600);  // Increased from 500x400
 
         QVBoxLayout *dialogLayout = new QVBoxLayout(detailDialog);
+        dialogLayout->setSpacing(15);  // Increased spacing between widgets
+        dialogLayout->setContentsMargins(20, 20, 20, 20);  // Added larger margins
 
-        // Rich text widget to support mathematical symbols
+        // Rich text widget with increased font size
         QTextEdit *detailsText = new QTextEdit();
         detailsText->setReadOnly(true);
 
+        // Set default font size for the entire text edit
+        QFont defaultFont = detailsText->font();
+        defaultFont.setPointSize(12);  // Increased from default
+        detailsText->setFont(defaultFont);
+
         // Construct detailed explanation with mathematical notation
-        QString explanation = "<html><body>";
-        explanation += "<h2>System of Equations Solution</h2>";
+        QString explanation = "<html><body style='font-size: 12pt;'>";  // Base font size increased
+        explanation += "<h2 style='font-size: 24pt; margin: 20px 0;'>System of Equations Solution</h2>";
 
         // Display the system of equations in standard mathematical notation
-        explanation += "<h3>Original System:</h3>";
-        explanation += "<p><b>Coefficient Matrix (A):</b><br>";
-        explanation += "A = ⎡";
+        explanation += "<h3 style='font-size: 18pt; margin: 15px 0;'>Original System:</h3>";
+        explanation += "<p style='font-size: 14pt; margin: 10px 0;'><b>Coefficient Matrix (A):</b><br>";
+        explanation += "<div style='margin: 15px 0; font-family: monospace;'>A = ⎡";
         for (size_t i = 0; i < LHS.size(); ++i) {
             explanation += "⎢";
             for (size_t j = 0; j < LHS[i].size(); ++j) {
@@ -1710,19 +1737,19 @@ private slots:
             }
             explanation += "⎥<br>";
         }
-        explanation += "⎣</p>";
+        explanation += "⎣</div></p>";
 
-        // Right-hand side vector
-        explanation += "<p><b>Constants Vector (b):</b><br>";
-        explanation += "b = ⎡";
+        // Right-hand side vector with increased spacing
+        explanation += "<p style='font-size: 14pt; margin: 15px 0;'><b>Constants Vector (b):</b><br>";
+        explanation += "<div style='margin: 15px 0; font-family: monospace;'>b = ⎡";
         for (double val : RHS) {
             explanation += QString::number(val, 'f', 4) + " ";
         }
-        explanation += "⎤</p>";
+        explanation += "⎤</div></p>";
 
-        // System representation
-        explanation += "<h3>Equation Representation:</h3>";
-        explanation += "<p>";
+        // System representation with larger equations
+        explanation += "<h3 style='font-size: 18pt; margin: 15px 0;'>Equation Representation:</h3>";
+        explanation += "<p style='font-size: 14pt; line-height: 2.0; margin: 15px 0;'>";
         for (size_t i = 0; i < LHS.size(); ++i) {
             for (size_t j = 0; j < LHS[i].size(); ++j) {
                 explanation += QString("%1x<sub>%2</sub>").arg(LHS[i][j], 0, 'f', 4).arg(j+1);
@@ -1732,17 +1759,17 @@ private slots:
         }
         explanation += "</p>";
 
-        // Solution vector
-        explanation += "<h3>Solution Vector (x):</h3>";
-        explanation += "<p>";
+        // Solution vector with increased visibility
+        explanation += "<h3 style='font-size: 18pt; margin: 15px 0;'>Solution Vector (x):</h3>";
+        explanation += "<p style='font-size: 14pt; line-height: 1.8; margin: 15px 0;'>";
         for (size_t i = 0; i < solution.size(); ++i) {
             explanation += QString("x<sub>%1</sub> = %2<br>").arg(i+1).arg(solution[i], 0, 'f', 4);
         }
         explanation += "</p>";
 
-        // Mathematical symbols and details
-        explanation += "<h3>Mathematical Details:</h3>";
-        explanation += "<ul>";
+        // Mathematical details with improved formatting
+        explanation += "<h3 style='font-size: 18pt; margin: 15px 0;'>Mathematical Details:</h3>";
+        explanation += "<ul style='font-size: 14pt; line-height: 1.8; margin: 15px 0;'>";
         explanation += "<li>∥A∥ (Matrix Norm): Represents the magnitude of the coefficient matrix</li>";
         explanation += "<li>det(A): Determinant of the coefficient matrix</li>";
         explanation += "<li>Ax = b: Linear system representation</li>";
@@ -1754,33 +1781,61 @@ private slots:
         detailsText->setHtml(explanation);
         dialogLayout->addWidget(detailsText);
 
-        // Solution table with symbols
+        // Solution table with increased size and better formatting
         QTableWidget *solutionTable = new QTableWidget(solution.size(), 2);
         solutionTable->setHorizontalHeaderLabels({"Variable (x)", "Value"});
+
+        // Set table font size
+        QFont tableFont = solutionTable->font();
+        tableFont.setPointSize(12);
+        solutionTable->setFont(tableFont);
+
+        // Set row height
+        solutionTable->verticalHeader()->setDefaultSectionSize(40);
+
+        // Style header
+        solutionTable->horizontalHeader()->setStyleSheet("QHeaderView::section { padding: 10px; font-weight: bold; }");
+
         for (size_t i = 0; i < solution.size(); ++i) {
             // Variable symbol
             QTableWidgetItem *varItem = new QTableWidgetItem(QString("x%1").arg(i+1));
             varItem->setFlags(varItem->flags() & ~Qt::ItemIsEditable);
+            varItem->setTextAlignment(Qt::AlignCenter);
 
             // Value
             QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(solution[i], 'f', 4));
             valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+            valueItem->setTextAlignment(Qt::AlignCenter);
 
             solutionTable->setItem(i, 0, varItem);
             solutionTable->setItem(i, 1, valueItem);
         }
+
         solutionTable->resizeColumnsToContents();
+        solutionTable->setMinimumHeight(200);
         dialogLayout->addWidget(solutionTable);
 
-        // Symbolic representation of solution method
+        // Symbolic representation of solution method with larger font
         QLabel *methodLabel = new QLabel("Solution Method: x = A⁻¹b");
-        methodLabel->setStyleSheet("font-weight: bold; font-size: 12pt;");
+        QFont methodFont = methodLabel->font();
+        methodFont.setPointSize(14);
+        methodFont.setBold(true);
+        methodLabel->setFont(methodFont);
+        methodLabel->setAlignment(Qt::AlignCenter);
+        methodLabel->setMargin(15);
         dialogLayout->addWidget(methodLabel);
 
-        // Close button
+        // Close button with better styling
         QPushButton *closeButton = new QPushButton("Close");
+        closeButton->setMinimumSize(120, 40);
+        closeButton->setFont(tableFont);
         connect(closeButton, &QPushButton::clicked, detailDialog, &QDialog::close);
-        dialogLayout->addWidget(closeButton);
+
+        QHBoxLayout *buttonLayout = new QHBoxLayout();
+        buttonLayout->addStretch();
+        buttonLayout->addWidget(closeButton);
+        buttonLayout->addStretch();
+        dialogLayout->addLayout(buttonLayout);
 
         detailDialog->setLayout(dialogLayout);
         detailDialog->exec();
@@ -1939,7 +1994,7 @@ private slots:
             "QMessageBox QLabel {"
             "    color: #d4d4d4;"
             "    min-width: 300px;"
-             "    font-size: 25px;"
+            "    font-size: 25px;"
             "}"
             "QMessageBox QPushButton {"
             "    background-color: #0e639c;"
